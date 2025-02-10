@@ -6,7 +6,7 @@ The branch simple does not have any special includes.
 The code is based on the sample Vector Seed and Key dll files (GenerateKeyExImpl.cpp and KeyGenAlgoInterfaceEx.h) They were created at 2003-07-17 by Vector Informatik GmbH.
 
 ## Generic information
-The aim of the my project to figure out how to create this DLL using free tools: IDE, compilers, cofiguration management tool
+The aim of the my project to figure out how to create this DLL using free tools: IDE, compiler, configuration management tool
 
 ## Changes
 - Both the source files should have been slightly changed to get the project compiled: warning and error free. 
