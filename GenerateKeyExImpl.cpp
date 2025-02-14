@@ -1,18 +1,22 @@
-// KeyGeneration.cpp : Defines the entry point for the DLL application.
-
 //****************************************************************************************
-//   File name: GenerateKeyExImpl.cpp
-// Description: Implementation of the key generation algorithm
-//        Date: 2003-07-17
-//   Copyright: Vector Informatik GmbH - 2003
+// File name: GenerateKeyExImpl.cpp
+// Description: Implementation of the key generation algorithm with a security function from the Crypto++ library
+//
+//   Copyright: Vector Informatik GmbH - 2003 - many thanks for the great example ;)
 // changes:
-// 2003-07-17   Vector  First implementation
-// 2025-02-25   JSz    comment out the nKeyGeneration variable
+// 2003-07-17   Vector First implementation
+// 2025-02-05   JSz    remove the nKeyGeneration variable
+// 2025-02-09   JSz    add ed25519 signature generation for the key
 //****************************************************************************************
 
 #include <windows.h>
-#include "KeyGenAlgoInterfaceEx.h"
+#include <string>
+#include <vector>
 
+#include "KeyGenAlgoInterfaceEx.h"
+#include "cryptlib.h"
+#include "xed25519.h"
+#include "osrng.h"
 
 #ifndef KEYGENALGO_API
   #ifdef KEYGENALGO_EXPORTS
@@ -22,12 +26,13 @@
   #endif
 #endif
 
-// This is an example of an exported function.
+using namespace CryptoPP;
 
-// This is the constructor of a class that has been exported.
-// see KeyGeneration.h for the class definition
-// KEYGENALGO_API int nKeyGeneration=0;
 
+const byte privateKey[] = {/*	L1											1 3	101	  112		  34			32 byte size */
+		/* ASN.1 Header*/	0x30, 0x2E, 0x02, 0x01, 0x00, 0x30, 0x05, 0x06, 0x03, 0x2B, 0x65, 0x70, 0x04, 0x22, 0x04, 0x20, /*End of Header*/
+		/*key*/		    	'S', 'e', 'c', 'u', 'r', 'i', 't', 'y', 0xFF, 'L', 'e', 'v', 'e', 'l', '1', 0xFF,
+							'P', 'r', 'i', 'v', 'a', 't', 'e', 'K', 'e', 'y', 0x42, 'J', 'o', 'z', 's', 'i' };
 
 BOOL APIENTRY DllMain( HANDLE hModule, 
                        DWORD  ul_reason_for_call, 
@@ -36,8 +41,6 @@ BOOL APIENTRY DllMain( HANDLE hModule,
 {
     return TRUE;
 }
-
-
 
 KEYGENALGO_API VKeyGenResultEx GenerateKeyEx(
       const unsigned char*  iSeedArray,     /* Array for the seed [in] */
@@ -49,13 +52,26 @@ KEYGENALGO_API VKeyGenResultEx GenerateKeyEx(
       unsigned int&         oSize           /* Length of the key [out] */
       )
 {
-    if (iSeedArraySize>iKeyArraySize)
+	std::string signature = "";
+	ed25519::Signer signer;
+	AutoSeededRandomPool prng;
+	std::string seed(reinterpret_cast<const char*>(iSeedArray));
+
+	// Generate the signature based on the seed with the private key
+	StringSource ss_pri(privateKey, sizeof(privateKey), true);
+	signer.AccessPrivateKey().Load(ss_pri);
+	StringSource(seed, true, new SignerFilter(prng, signer, new StringSink(signature)));
+	
+	// Set the size of the key based on the signature's size
+	oSize = signature.size();	
+    if (signature.size() > iKeyArraySize)
       return KGRE_BufferToSmall;
-    for (unsigned int i=0;i<iSeedArraySize;i++)
-      ioKeyArray[i]=~iSeedArray[i];
-    oSize=iSeedArraySize;
-    
-  return KGRE_Ok;
+
+	// Copy the signature to the key
+	std::copy(signature.begin(), signature.end(), ioKeyArray);
+	
+	// Return successfully generated key
+  	return KGRE_Ok;
 }
 
 

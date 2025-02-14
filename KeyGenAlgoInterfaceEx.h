@@ -5,8 +5,7 @@
 //   Copyright: Vector Informatik GmbH - 2003
 // changes:
 // 2003-07-17   Vector  First implementation
-// 2025-02-25   JSz     use the same declaration for the function VKeyGenResultEx as in the cpp file
-//                      added preprocessor definitions from the vcproj file    
+// 2025-02-05   JSz     use the same declaration for the function VKeyGenResultEx as in the cpp file  
 //****************************************************************************************
 
 #ifndef KEY_GEN_ALGO_INTERFACE_H
@@ -50,14 +49,5 @@ KEYGENALGO_API VKeyGenResultEx GenerateKeyEx(
   unsigned int          iKeyArraySize,  /* Maximum length of the array for the key [in] */
   unsigned int&         oSize           /* Length of the key [out] */
   );
-
-// old declaration
-// KEYGENALGO_API VKeyGenResultEx GenerateKeyEx(
-//   const unsigned char*  ipSeedArray,      unsigned int  iSeedArraySize,
-//   const unsigned int    iSecurityLevel,   const char*   ipVariant,
-//   unsigned char*        iopKeyArray,      unsigned int  iMaxKeyArraySize, 
-//   unsigned int&         oActualKeyArraySize);
-
-
 
 #endif // KEY_GEN_ALGO_INTERFACE_H
