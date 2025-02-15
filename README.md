@@ -4,7 +4,7 @@ The branch __with_Crypto++__ has the Crypto++ library from the [Crypto++ Github 
 
 ## Licenses
 The code is based on the sample Vector Seed and Key dll files (GenerateKeyExImpl.cpp and KeyGenAlgoInterfaceEx.h) They were created at 2003-07-17 by Vector Informatik GmbH.
-To get it work the Crypto++ library shall be downloaded an built. Please always ad the Copyright file of the Crypto++ library. It is prepared in the coresponding folders.
+To get it work the Crypto++ library shall be downloaded an built. Please always add the Copyright file of the Crypto++ library. It is prepared in the corresponding folders.
 
 ## Generic information
 The aim of the project to figure out how to create a seed and key DLL using free tools: IDE, compiler, configuration management tool, which contains special security functions.
